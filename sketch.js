@@ -17,13 +17,29 @@ let car2 = {
 //Initial setup of window size
 function setup() {
     createCanvas(1500, 600);
+    //Start and Stop Button
+    button1 = createButton("Start");
+    button1.style('font-size', '30px');
+    button1.style('background-color','#404DF4');
+    button1.position(1400,20)   
+     .mousePressed(()=> {
+      if(!start){
+        start=true;
+        button1.html('Stop');
+        button1.style('background-color','#F30303');  
+      } else {
+        start=false;
+        button1.html('Start');
+        button1.style('background-color','#404DF4');
+      }
+     });
 }
 
 //Drawing objects and their motion
 function draw() {
     
     background('#EBF1FF');
-    
+        
     //Add Sun
     fill(255, 255, 0);
 	ellipse(50, 50, 60, 60);
@@ -53,22 +69,8 @@ function draw() {
     fill(100, 100, 100);
 	ellipse(car2.x, 450, 40, 40);
 	ellipse(car2.x + 110, 450, 40, 40);
-    
-    
-    //Start and Stop Toggle Logic
-    if(!start){
-     //start button 
-     fill(0, car1.g, 0);
-     rect(900, 50, 30, 30);  
-    }
-    
-    if (start){
-     //stop button 
-     fill(255, 0, 0);
-	 rect(900, 50, 30, 30);    
-    }
-    
-    //Start/Stop button
+            
+    //Start/Stop cars
 	if (start) {
      //speed of the car
      car1.x = car1.x + speed1;    
@@ -84,17 +86,6 @@ function draw() {
 	 }
     }
 }
-
-//When mouse clicks start and stop button
-function mousePressed() {
-	if (mouseX >= 900 & mouseX < 930 && mouseY >= 50 && mouseY < 80) {
-		start = !start;
-    //stop button 
-    fill(255, 255, sky.col6);
-	  rect(900, 50, 30, 30);
-	}
-}
-
 
 
 
