@@ -7,13 +7,17 @@ const io = socket(server);
 
 app.use(express.static('../client'));
 
-const newConnection = function(){
+const newConnection = function(socket){
   console.log('socket');
+
+  socket.on('mouse', mouseMsg);
+
+  function mouseMsg(data){
+    console.log(data);
+    io.sockets.emit('mouse', data);
+  }
 }
 
 io.sockets.on('connection', newConnection);
-
-
-
 
 console.log('Server is running');
