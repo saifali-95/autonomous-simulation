@@ -37,6 +37,23 @@ function setup() {
   });
 }
 
+//sendDataPoints of Mouse Click
+function mouseDragged() {
+  console.log('Sending:' + mouseX + ',' + mouseY);
+
+  let data = {
+      x: mouseX,
+      y: mouseY
+  }
+
+  socket.emit('mouse', data);
+  socket.on('mouse', newData);
+}
+
+function newData(data) {
+    console.log(data.x, data.y);
+}
+
 //Drawing objects and their motion
 function draw() {
   background("#EBF1FF");
