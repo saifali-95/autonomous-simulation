@@ -17,6 +17,9 @@ let car2 = {
 //Initial setup of window size
 function setup() {
   createCanvas(1500, 600);
+
+  socket = io.connect("http://localhost:3000");  
+
   //Start and Stop Button
   button1 = createButton("Start");
   button1.style("font-size", "30px");
