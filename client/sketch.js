@@ -1,21 +1,10 @@
 //speed and switch variables
-let speed1 = 1.0;
-let speed2 = -1.0;
 let start;
 let speed;
 let x;
 let newCar = {};
-
-//x and y axis variables of cars
-let car1 = {
-  x: 100,
-  g: 250,
-};
-
-let car2 = {
-  x: 800,
-  g: 250,
-};
+let cars = {};
+let carId;
 
 //Initial setup of window size
 function setup() {
@@ -24,22 +13,22 @@ function setup() {
   socket = io.connect("http://localhost:3000"); 
   
   
-  //Input for user to enter speed of the car and direction
+  //Input field for user to enter speed of the car and direction
   speed = createInput().attribute('placeholder', 'Speed (+/-)');
   speed.position(20, 800);
 
-  //Input for user to enter Spot where to place the car in the x-coordinate
+  //Input field for user to enter Spot where to place the car in the x-coordinate
   x = createInput().attribute('placeholder', 'Car Position');
   x.position(20, 830);
 
-  //Submit button to send the input data from the user to the server using socket.io
+  //Submit button to send the user input to the server using socket.io
   submitButton = createButton('submit');
   submitButton.position(20, 860);
   submitButton.mousePressed(()=> {
     newCar = {
-        speed : speed.value(),
+        speed : Number(speed.value()),
         position : {
-            x: x.value(),
+            x: Number(x.value()),
             g: 250,
         }
     }
@@ -67,6 +56,15 @@ function setup() {
     
   });
 
+  socket.on('newCarRequest', newCarRequest);
+  
+  function newCarRequest(data) {
+    cars = data;
+    console.log(cars);
+    carId = Object.keys(cars)[Object.keys(cars).length-1];
+  }
+
+  //Get's a signal to stop or start the car.
   socket.on('controlCar', carMotion); 
 
   function carMotion(data) {
@@ -102,36 +100,20 @@ function draw() {
   rect(0, 200, 50, 275);
   rect(1450, 200, 50, 275);
 
-  //the car1 itself
-  stroke(50);
-  fill("#F44040");
-  rect(car1.x, 400, 110, 50, 20);
-  fill(100, 100, 100);
-  ellipse(car1.x, 450, 40, 40);
-  ellipse(car1.x + 110, 450, 40, 40);
-
-  //the car2 itself
-  fill("#404DF4");
-  rect(car2.x, 400, 110, 50, 20);
-  stroke(50);
-  fill(100, 100, 100);
-  ellipse(car2.x, 450, 40, 40);
-  ellipse(car2.x + 110, 450, 40, 40);
+  for(const car in cars) {
+    stroke(50);
+    fill("#E24040");
+    rect(cars[car]['position']['x'], 400, 110, 50, 20);
+    fill(100, 100, 100);
+    ellipse(cars[car]['position']['x'], 450, 40, 40);
+    ellipse(cars[car]['position']['x'] + 110, 450, 40, 40);
+  }
 
   //Start/Stop cars
   if (start) {
     //speed of the car
-    car1.x = car1.x + speed1;
-    car2.x = car2.x + speed2;
-    socket.emit('carPosition', car1.x); 
-
-    //boolean statement for the car turning around
-    if (car1.x + 110 >= 1450 || car1.x < 50 || car1.x + 110 === car2.x) {
-      speed1 = speed1 * -1;
-    }
-
-    if (car2.x + 110 >= 1450 || car2.x < 50 || car1.x + 110 === car2.x) {
-      speed2 = speed2 * -1;
-    }
+    cars[carId]['position']['x'] = cars[carId]['position']['x'] + cars[carId]['speed'];
+    // car2.x = car2.x + speed2;
+    socket.emit('carPosition', cars[carId]['position']['x']); 
   }
 }
