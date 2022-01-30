@@ -1,7 +1,7 @@
 //speed and switch variables
 let speed1 = 1.0;
 let speed2 = -1.0;
-let start = false;
+let start;
 let speed;
 let x;
 let newCar = {};
@@ -22,6 +22,7 @@ function setup() {
   createCanvas(1500, 600);
 
   socket = io.connect("http://localhost:3000"); 
+  
   
   //Input for user to enter speed of the car and direction
   speed = createInput().attribute('placeholder', 'Speed (+/-)');
@@ -44,22 +45,43 @@ function setup() {
     }
     socket.emit('newCarRequest', newCar); 
   });
-
+  
   //Start and Stop Button
   button1 = createButton("Start");
   button1.style("font-size", "30px");
   button1.style("background-color", "#404DF4");
   button1.position(1400, 20).mousePressed(() => {
+    
+       
     if (!start) {
       start = true;
       button1.html("Stop");
       button1.style("background-color", "#F30303");
+      socket.emit('controlCar', {start: true}); 
     } else {
       start = false;
       button1.html("Start");
       button1.style("background-color", "#404DF4");
+      socket.emit('controlCar', {start: false}); 
     }
+    
   });
+
+  socket.on('controlCar', carMotion); 
+
+  function carMotion(data) {
+    console.log('Received Data to server', data.start);
+    start = data.start;
+
+    if (start) {
+        button1.html("Stop");
+        button1.style("background-color", "#F30303");
+    } else {
+        button1.html("Start");
+        button1.style("background-color", "#404DF4");
+    }
+    
+  }
 }
 
 //Drawing objects and their motion
