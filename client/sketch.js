@@ -2,6 +2,9 @@
 let speed1 = 1.0;
 let speed2 = -1.0;
 let start = false;
+let speed;
+let x;
+let newCar = {};
 
 //x and y axis variables of cars
 let car1 = {
@@ -18,7 +21,29 @@ let car2 = {
 function setup() {
   createCanvas(1500, 600);
 
-  socket = io.connect("http://localhost:3000");  
+  socket = io.connect("http://localhost:3000"); 
+  
+  //Input for user to enter speed of the car and direction
+  speed = createInput().attribute('placeholder', 'Speed (+/-)');
+  speed.position(20, 800);
+
+  //Input for user to enter Spot where to place the car in the x-coordinate
+  x = createInput().attribute('placeholder', 'Car Position');
+  x.position(20, 830);
+
+  //Submit button to send the input data from the user to the server using socket.io
+  submitButton = createButton('submit');
+  submitButton.position(20, 860);
+  submitButton.mousePressed(()=> {
+    newCar = {
+        speed : speed.value(),
+        position : {
+            x: x.value(),
+            g: 250,
+        }
+    }
+    socket.emit('newCarRequest', newCar); 
+  });
 
   //Start and Stop Button
   button1 = createButton("Start");
@@ -35,23 +60,6 @@ function setup() {
       button1.style("background-color", "#404DF4");
     }
   });
-}
-
-//sendDataPoints of Mouse Click
-function mouseDragged() {
-  console.log('Sending:' + mouseX + ',' + mouseY);
-
-  let data = {
-      x: mouseX,
-      y: mouseY
-  }
-
-  socket.emit('mouse', data);
-  socket.on('mouse', newData);
-}
-
-function newData(data) {
-    console.log(data.x, data.y);
 }
 
 //Drawing objects and their motion
@@ -93,6 +101,7 @@ function draw() {
     //speed of the car
     car1.x = car1.x + speed1;
     car2.x = car2.x + speed2;
+    socket.emit('carPosition', car1.x); 
 
     //boolean statement for the car turning around
     if (car1.x + 110 >= 1450 || car1.x < 50 || car1.x + 110 === car2.x) {

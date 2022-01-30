@@ -8,14 +8,21 @@ const io = socket(server);
 app.use(express.static('../client'));
 
 const newConnection = function(socket){
-  console.log('socket');
+  console.log('New connection', socket.id);
 
-  socket.on('mouse', mouseMsg);
+  socket.on('newCarRequest', newCarRequest);
+  socket.on('carPosition', carPosition);
+  socket.on('controlCar', controlCar);
 
-  function mouseMsg(data){
+  function newCarRequest(data){
     console.log(data);
-    io.sockets.emit('mouse', data);
+    io.sockets.emit('newCarRequest', data);
   }
+
+  function carPosition(data) {
+    console.log(data);
+  }
+
 }
 
 io.sockets.on('connection', newConnection);
