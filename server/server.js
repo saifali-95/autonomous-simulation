@@ -5,6 +5,8 @@ const app = express();
 const server = app.listen(3000);
 const io = socket(server);
 
+let cars = {};
+
 let start;
 
 app.use(express.static('../client'));
@@ -19,14 +21,16 @@ const newConnection = function(socket){
   //io.sockets.emit('controlCar', {start});
 
   function newCarRequest(data){
-    //console.log(data);
-    io.sockets.emit('newCarRequest', data);
+    cars[(socket.id).toString()] = data;
+    console.log(cars);
+    io.sockets.emit('newCarRequest', cars);
   }
 
   function carPosition(data) {
     //console.log(data);
   }
 
+  //Control start and stop of 
   function controlCar(data) {
     start = data.start;
     socket.broadcast.emit('controlCar', {start});   
