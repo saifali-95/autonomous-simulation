@@ -12,8 +12,9 @@ let start;
 app.use(express.static('../client'));
 
 const newConnection = function(socket){
-  console.log('New connection', socket.id);
-
+  
+  console.log('New Connection', socket.id);
+  
   socket.on('newCarRequest', newCarRequest);
   socket.on('carPosition', carPosition);
   socket.on('controlCar', controlCar);
@@ -37,6 +38,6 @@ const newConnection = function(socket){
   }
 }
 
-io.sockets.on('connection', newConnection);
+io.sockets.on('connect', newConnection);
 
 console.log('Server is running');
