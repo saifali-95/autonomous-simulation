@@ -2,11 +2,11 @@
 let start;
 let speed;
 let x;
+let color;
 let newCar = {};
-let cars = {};
+let cars = [];
 let userId;
 let carId;
-
 
 //Initial setup of window size
 function setup() {
@@ -14,78 +14,82 @@ function setup() {
 
   socket = io.connect("http://localhost:3000");
 
-  socket.on('connect', function() {
+  socket.on("connect", function () {
     userId = socket.id;
-    console.log('userId', userId);
   });
-      
+
   //Input field for user to enter speed of the car and direction
-  speed = createInput().attribute('placeholder', 'Speed (+/-)');
-  speed.position(20, 800);
+  speed = createInput().attribute("placeholder", "Speed (+/-)");
+  speed.position(20, 700);
 
   //Input field for user to enter Spot where to place the car in the x-coordinate
-  x = createInput().attribute('placeholder', 'Car Position');
-  x.position(20, 830);
+  x = createInput().attribute("placeholder", "Car Position");
+  x.position(20, 730);
+
+  //Input field for user to enter car color
+  color = createInput().attribute("placeholder", "Car Color");
+  color.position(20, 760);
 
   //Submit button to send the user input to the server using socket.io
-  submitButton = createButton('submit');
-  submitButton.position(20, 860);
-  submitButton.mousePressed(()=> {
+  submitButton = createButton("submit");
+  submitButton.position(250, 760);
+  submitButton.mousePressed(() => {
     newCar = {
-        speed : Number(speed.value()),
-        position : {
-            x: Number(x.value()),
-            g: 250,
-        }
-    }
-    socket.emit('newCarRequest', newCar); 
+      userId: userId,
+      speed: Number(speed.value()),
+      position: {
+        x: Number(x.value()),
+        g: 250,
+      },
+      color: color.value()
+    };
+    socket.emit("newCarRequest", newCar);
   });
-  
+
   //Start and Stop Button
   button1 = createButton("Start");
   button1.style("font-size", "30px");
-  button1.style("background-color", "#404DF4");
-  button1.position(1400, 20).mousePressed(() => {
-    
-       
+  button1.style("background-color", "#00FF00");
+  button1.position(20, 650).mousePressed(() => {
     if (!start) {
       start = true;
       button1.html("Stop");
-      button1.style("background-color", "#F30303");
-      socket.emit('controlCar', {start: true}); 
+      button1.style("background-color", "#FF0000");
+      socket.emit("controlCar", { start: true });
     } else {
       start = false;
       button1.html("Start");
-      button1.style("background-color", "#404DF4");
-      socket.emit('controlCar', {start: false}); 
+      button1.style("background-color", "#00FF00");
+      socket.emit("controlCar", { start: false });
     }
-    
   });
 
-  socket.on('newCarRequest', newCarRequest);
-  
+  socket.on("newCarRequest", newCarRequest);
+
   function newCarRequest(data) {
     cars = data;
-    console.log(cars);
     carId = userId;
-    console.log(carId);
+  }
+
+  socket.on("carPosition", updateCarPosition);
+
+  function updateCarPosition(data) {
+    cars = data;
   }
 
   //Get's a signal to stop or start the car.
-  socket.on('controlCar', carMotion); 
+  socket.on("controlCar", carMotion);
 
   function carMotion(data) {
-    console.log('Received Data to server', data.start);
     start = data.start;
 
     if (start) {
-        button1.html("Stop");
-        button1.style("background-color", "#F30303");
+      button1.html("Stop");
+      button1.style("background-color", "#FF0000");
     } else {
-        button1.html("Start");
-        button1.style("background-color", "#404DF4");
+      button1.html("Start");
+      button1.style("background-color", "#00FF00");
     }
-    
   }
 }
 
@@ -107,26 +111,56 @@ function draw() {
   rect(0, 200, 50, 275);
   rect(1450, 200, 50, 275);
 
-  for(const car in cars) {
+  for (const car of cars) {
     stroke(50);
-    fill("#E24040");
-    rect(cars[car]['position']['x'], 400, 110, 50, 20);
+    fill(car['color']);
+    rect(car["position"]["x"], 400, 110, 50, 20);
     fill(100, 100, 100);
-    ellipse(cars[car]['position']['x'], 450, 40, 40);
-    ellipse(cars[car]['position']['x'] + 110, 450, 40, 40);
+    ellipse(car["position"]["x"], 450, 40, 40);
+    ellipse(car["position"]["x"] + 110, 450, 40, 40);
   }
 
   //Start/Stop cars
   if (start) {
-        
-    //speed of the car
-    cars[carId]['position']['x'] = cars[carId]['position']['x'] + cars[carId]['speed'];
     
-    //boolean statement for the car turning around
-    if (cars[carId]['position']['x'] + 110 >= 1450 || cars[carId]['position']['x'] < 50 ) {
-      cars[carId]['speed'] = cars[carId]['speed'] * -1;
-    }
+    for (let i=0; i<= cars.length-1; i++) {
+      cars[i]['position']['x'] = cars[i]['position']['x'] + cars[i]['speed'];
 
-    socket.emit('carPosition', cars[carId]['position']['x']); 
+      //boolean statement for the car turning around
+      if (
+        cars[i]["position"]["x"] + 110 >= 1450 ||
+        cars[i]["position"]["x"] < 50
+      ) {
+        cars[i]["speed"] = cars[i]["speed"] * -1;
+      }
+
+      if (cars[0]["position"]["x"] + 110 + cars[0]['speed'] >= cars[1]["position"]["x"] + cars[1]['speed']) {
+        cars[0]["speed"] = cars[0]["speed"] * -1;
+        cars[1]["speed"] = cars[1]["speed"] * -1;
+      }
+
+      // if (cars[1]["position"]["x"]  - Math.abs(cars[1]['speed']) <= cars[0]["position"]["x"] + 110 + cars[0]["speed"]){
+      //   cars[0]["speed"] = cars[0]["speed"] * -1;
+      //   cars[1]["speed"] = cars[1]["speed"] * -1;
+      // }
+
+      socket.emit("carPosition", cars);
+    }
+    
+    // for (const car of cars) {
+    //   //speed of the car
+    //   car["position"]["x"] =
+    //     car["position"]["x"] + car["speed"];
+
+    //   //boolean statement for the car turning around
+    //   if (
+    //     car["position"]["x"] + 110 >= 1450 ||
+    //     car["position"]["x"] < 50
+    //   ) {
+    //     car["speed"] = car["speed"] * -1;
+    //   }
+
+    //   socket.emit("carPosition", cars);
+    // }
   }
 }
