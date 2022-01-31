@@ -69,6 +69,7 @@ function setup() {
   function newCarRequest(data) {
     cars = data;
     carId = userId;
+    console.log('cars sorted data', cars);
   }
 
   socket.on("carPosition", updateCarPosition);
@@ -139,28 +140,7 @@ function draw() {
         cars[1]["speed"] = cars[1]["speed"] * -1;
       }
 
-      // if (cars[1]["position"]["x"]  - Math.abs(cars[1]['speed']) <= cars[0]["position"]["x"] + 110 + cars[0]["speed"]){
-      //   cars[0]["speed"] = cars[0]["speed"] * -1;
-      //   cars[1]["speed"] = cars[1]["speed"] * -1;
-      // }
-
       socket.emit("carPosition", cars);
     }
-    
-    // for (const car of cars) {
-    //   //speed of the car
-    //   car["position"]["x"] =
-    //     car["position"]["x"] + car["speed"];
-
-    //   //boolean statement for the car turning around
-    //   if (
-    //     car["position"]["x"] + 110 >= 1450 ||
-    //     car["position"]["x"] < 50
-    //   ) {
-    //     car["speed"] = car["speed"] * -1;
-    //   }
-
-    //   socket.emit("carPosition", cars);
-    // }
   }
 }

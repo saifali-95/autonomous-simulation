@@ -23,7 +23,10 @@ const newConnection = function(socket){
 
   function newCarRequest(data){
     cars.push(data);
-    io.sockets.emit('newCarRequest', cars);
+    let sortedCars = cars.sort((a, b) => {
+          return a.position.x - b.position.x;
+    });
+    io.sockets.emit('newCarRequest', sortedCars);
   }
 
   function carPosition(data) {
