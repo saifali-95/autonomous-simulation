@@ -23,12 +23,12 @@ const newConnection = function(socket){
 
   function newCarRequest(data){
     cars[(socket.id).toString()] = data;
-    console.log(cars);
     io.sockets.emit('newCarRequest', cars);
   }
 
   function carPosition(data) {
-    //console.log(data);
+    cars = data;
+    socket.broadcast.emit('carPosition', cars);  
   }
 
   //Control start and stop of 
