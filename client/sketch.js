@@ -4,15 +4,21 @@ let speed;
 let x;
 let newCar = {};
 let cars = {};
+let userId;
 let carId;
+
 
 //Initial setup of window size
 function setup() {
   createCanvas(1500, 600);
 
-  socket = io.connect("http://localhost:3000"); 
-  
-  
+  socket = io.connect("http://localhost:3000");
+
+  socket.on('connect', function() {
+    userId = socket.id;
+    console.log('userId', userId);
+  });
+      
   //Input field for user to enter speed of the car and direction
   speed = createInput().attribute('placeholder', 'Speed (+/-)');
   speed.position(20, 800);
@@ -61,7 +67,8 @@ function setup() {
   function newCarRequest(data) {
     cars = data;
     console.log(cars);
-    carId = Object.keys(cars)[Object.keys(cars).length-1];
+    carId = userId;
+    console.log(carId);
   }
 
   //Get's a signal to stop or start the car.
@@ -111,9 +118,15 @@ function draw() {
 
   //Start/Stop cars
   if (start) {
+        
     //speed of the car
     cars[carId]['position']['x'] = cars[carId]['position']['x'] + cars[carId]['speed'];
-    // car2.x = car2.x + speed2;
+    
+    //boolean statement for the car turning around
+    if (cars[carId]['position']['x'] + 110 >= 1450 || cars[carId]['position']['x'] < 50 ) {
+      cars[carId]['speed'] = cars[carId]['speed'] * -1;
+    }
+
     socket.emit('carPosition', cars[carId]['position']['x']); 
   }
 }
