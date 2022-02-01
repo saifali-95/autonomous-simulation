@@ -135,11 +135,23 @@ function draw() {
         cars[i]["speed"] = cars[i]["speed"] * -1;
       }
 
-      if (cars[0]["position"]["x"] + 110 + cars[0]['speed'] >= cars[1]["position"]["x"] + cars[1]['speed']) {
-        cars[0]["speed"] = cars[0]["speed"] * -1;
-        cars[1]["speed"] = cars[1]["speed"] * -1;
+      if (i === 0) {
+        if (cars[i]["position"]["x"] + 110 + cars[i]['speed'] >= cars[i+1]["position"]["x"] + cars[i+1]['speed']) {
+          cars[i]["speed"] = cars[i]["speed"] * -1;
+          cars[i+1]["speed"] = cars[i+1]["speed"] * -1;
+        }
       }
-
+      else if (i === cars.length -1) {
+        if (cars[i]["position"]["x"] + cars[i]['speed'] <= cars[i-1]["position"]["x"] + cars[i-1]['speed'] + 110) {
+          cars[i]["speed"] = cars[i]["speed"] * -1;
+          cars[i-1]["speed"] = cars[i-1]["speed"] * -1;
+        }
+      } else {
+        if (cars[i]["position"]["x"] + 110 + cars[i]['speed'] >= cars[i+1]["position"]["x"] + cars[i+1]['speed']) {
+          cars[i]["speed"] = cars[i]["speed"] * -1;
+          cars[i+1]["speed"] = cars[i+1]["speed"] * -1;
+        }
+      }
       socket.emit("carPosition", cars);
     }
   }
