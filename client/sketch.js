@@ -41,7 +41,7 @@ function setup() {
         x: Number(x.value()),
         g: 250,
       },
-      color: color.value()
+      color: color.value(),
     };
     socket.emit("newCarRequest", newCar);
   });
@@ -69,7 +69,6 @@ function setup() {
   function newCarRequest(data) {
     cars = data;
     carId = userId;
-    console.log('cars sorted data', cars);
   }
 
   socket.on("carPosition", updateCarPosition);
@@ -111,21 +110,37 @@ function draw() {
   fill("#9D6643");
   rect(0, 200, 50, 275);
   rect(1450, 200, 50, 275);
-
+ 
   for (const car of cars) {
-    stroke(50);
-    fill(car['color']);
-    rect(car["position"]["x"], 400, 110, 50, 20);
-    fill(100, 100, 100);
-    ellipse(car["position"]["x"], 450, 40, 40);
-    ellipse(car["position"]["x"] + 110, 450, 40, 40);
+    
+    if (car['userId'] === userId) {
+     stroke(50);
+     fill(car["color"]);
+     rect(car["position"]["x"], 400, 110, 50, 20);
+     fill(100, 100, 100);
+     ellipse(car["position"]["x"], 450, 40, 40);
+     ellipse(car["position"]["x"] + 110, 450, 40, 40);
+
+     stroke(50);
+     fill(car["color"]);
+     rect(50, 125, 75, 25, 10);
+     fill(100, 100, 100);
+     ellipse(50, 150, 20, 20);
+     ellipse(50 + 75, 150, 20, 20);
+    } else {
+      stroke(50);
+      fill(car["color"]);
+      rect(car["position"]["x"], 400, 110, 50, 20);
+      fill(100, 100, 100);
+      ellipse(car["position"]["x"], 450, 40, 40);
+      ellipse(car["position"]["x"] + 110, 450, 40, 40);
+    }
   }
 
   //Start/Stop cars
   if (start) {
-    
-    for (let i=0; i<= cars.length-1; i++) {
-      cars[i]['position']['x'] = cars[i]['position']['x'] + cars[i]['speed'];
+    for (let i = 0; i <= cars.length - 1; i++) {
+      cars[i]["position"]["x"] = cars[i]["position"]["x"] + cars[i]["speed"];
 
       //boolean statement for the car turning around
       if (
@@ -136,20 +151,28 @@ function draw() {
       }
 
       if (i === 0) {
-        if (cars[i]["position"]["x"] + 110 + cars[i]['speed'] >= cars[i+1]["position"]["x"] + cars[i+1]['speed']) {
+        if (
+          cars[i]["position"]["x"] + 110 + cars[i]["speed"] >=
+          cars[i + 1]["position"]["x"] + cars[i + 1]["speed"]
+        ) {
           cars[i]["speed"] = cars[i]["speed"] * -1;
-          cars[i+1]["speed"] = cars[i+1]["speed"] * -1;
+          cars[i + 1]["speed"] = cars[i + 1]["speed"] * -1;
         }
-      }
-      else if (i === cars.length -1) {
-        if (cars[i]["position"]["x"] + cars[i]['speed'] <= cars[i-1]["position"]["x"] + cars[i-1]['speed'] + 110) {
+      } else if (i === cars.length - 1) {
+        if (
+          cars[i]["position"]["x"] + cars[i]["speed"] <=
+          cars[i - 1]["position"]["x"] + cars[i - 1]["speed"] + 110
+        ) {
           cars[i]["speed"] = cars[i]["speed"] * -1;
-          cars[i-1]["speed"] = cars[i-1]["speed"] * -1;
+          cars[i - 1]["speed"] = cars[i - 1]["speed"] * -1;
         }
       } else {
-        if (cars[i]["position"]["x"] + 110 + cars[i]['speed'] >= cars[i+1]["position"]["x"] + cars[i+1]['speed']) {
+        if (
+          cars[i]["position"]["x"] + 110 + cars[i]["speed"] >=
+          cars[i + 1]["position"]["x"] + cars[i + 1]["speed"]
+        ) {
           cars[i]["speed"] = cars[i]["speed"] * -1;
-          cars[i+1]["speed"] = cars[i+1]["speed"] * -1;
+          cars[i + 1]["speed"] = cars[i + 1]["speed"] * -1;
         }
       }
       socket.emit("carPosition", cars);
