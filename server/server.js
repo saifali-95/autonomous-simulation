@@ -6,6 +6,7 @@ const server = app.listen(3000);
 const io = socket(server);
 
 let cars = [];
+let sortedCars;
 
 let start;
 
@@ -21,11 +22,26 @@ const newConnection = function(socket){
   socket.on('controlCar', controlCar);
 
   //The callback function will execute when a user register's a new car;
-  function newCarRequest(data){
+  async function newCarRequest(data){
     cars.push(data);
-    let sortedCars = cars.sort((a, b) => {
-          return a.position.x - b.position.x;
+    sortedCars = await cars.sort((a, b) => {
+      return a.position.x - b.position.x;
     });
+    for(let i=0; i<sortedCars.length-1; i++) {
+      
+      if(i===0 && sortedCars.length === 1){
+        sortedCars[i]['leftObject'] = 'wall';
+        sortedCars[i]['rightObject'] = 'wall';
+      } else if (i===0 && !(sortedCars.length === 1)){
+        sortedCars[i]['leftObject'] = 'wall';
+        sortedCars[i]['rightObject'] = sortedCars[i+1]['userId'];
+      } else {
+        sortedCars[i]['leftObject'] = sortedCars[i-1]['userId'];
+        sortedCars[i]['rightObject'] = sortedCars[i+1]['userId'];
+        sortedCars[sortedCars.length-1]['leftObject'] = sortedCars[(sortedCars.length-1)-1]['userId'];
+        sortedCars[sortedCars.length-1]['rightObject'] = 'wall';
+      }
+    }
     io.sockets.emit('newCarRequest', sortedCars);
   }
 
