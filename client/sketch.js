@@ -127,6 +127,7 @@ function draw() {
      fill(100, 100, 100);
      ellipse(50, 150, 20, 20);
      ellipse(50 + 75, 150, 20, 20);
+
     } else {
       stroke(50);
       fill(car["color"]);
@@ -151,6 +152,7 @@ function draw() {
       }
 
       if (i === 0) {
+               
         if (
           cars[i]["position"]["x"] + 110 + cars[i]["speed"] >=
           cars[i + 1]["position"]["x"] + cars[i + 1]["speed"]
@@ -159,6 +161,7 @@ function draw() {
           cars[i + 1]["speed"] = cars[i + 1]["speed"] * -1;
         }
       } else if (i === cars.length - 1) {
+       
         if (
           cars[i]["position"]["x"] + cars[i]["speed"] <=
           cars[i - 1]["position"]["x"] + cars[i - 1]["speed"] + 110
@@ -167,6 +170,7 @@ function draw() {
           cars[i - 1]["speed"] = cars[i - 1]["speed"] * -1;
         }
       } else {
+         
         if (
           cars[i]["position"]["x"] + 110 + cars[i]["speed"] >=
           cars[i + 1]["position"]["x"] + cars[i + 1]["speed"]
