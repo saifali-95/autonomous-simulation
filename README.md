@@ -4,7 +4,7 @@ The autonomous simulation app is designed for user's to visualize 1D motion of n
 
 ## Project Demo
 
-!["Final Product Demo"](https://github.com/saifali-95/react-travel-map/blob/master/pictures/simulation-demo.gif)
+!["Final Product Demo"](https://github.com/saifali-95/autonomous-simulation/blob/master/pictures/simulation-demo.gif)
 
 ## Dependencies
 ### Server Side
