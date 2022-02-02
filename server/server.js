@@ -29,6 +29,13 @@ const newConnection = function(socket){
     });
     for(let i=0; i<sortedCars.length-1; i++) {
       
+      if (sortedCars.length === 2) {
+       sortedCars[0]['leftObject'] = 'wall';
+       sortedCars[0]['rightObject'] = sortedCars[1]['userId'];
+       sortedCars[1]['leftObject'] = sortedCars[0]['userId'];
+       sortedCars[1]['rightObject'] = 'wall';
+      }
+      
       if(i===0 && sortedCars.length === 1){
         sortedCars[i]['leftObject'] = 'wall';
         sortedCars[i]['rightObject'] = 'wall';
@@ -38,8 +45,6 @@ const newConnection = function(socket){
       } else {
         sortedCars[i]['leftObject'] = sortedCars[i-1]['userId'];
         sortedCars[i]['rightObject'] = sortedCars[i+1]['userId'];
-        sortedCars[sortedCars.length-1]['leftObject'] = sortedCars[(sortedCars.length-1)-1]['userId'];
-        sortedCars[sortedCars.length-1]['rightObject'] = 'wall';
       }
     }
     io.sockets.emit('newCarRequest', sortedCars);

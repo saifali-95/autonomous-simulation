@@ -151,7 +151,9 @@ function draw() {
         cars[i]["speed"] = cars[i]["speed"] * -1;
       }
 
-      if (i === 0) {
+      if (cars.length === 1) {
+        cars[i]["position"]["x"] = cars[i]["position"]["x"] + cars[i]["speed"];
+      } else if (i === 0) {
                
         if (
           cars[i]["position"]["x"] + 110 + cars[i]["speed"] >=
