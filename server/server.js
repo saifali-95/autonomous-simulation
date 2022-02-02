@@ -9,6 +9,7 @@ let cars = [];
 
 let start;
 
+app.set("view engine", "ejs");
 app.use(express.static('../client'));
 
 const newConnection = function(socket){
@@ -42,5 +43,21 @@ const newConnection = function(socket){
 }
 
 io.sockets.on('connect', newConnection);
+
+app.get("/:id", (req, res) => {
+  const userId = req.params.id;
+
+  const carInfo =  cars.filter(car => {
+    return car.userId === userId;
+  })
+
+  if(carInfo.length !== 0){
+    res.json(carInfo);
+  } else {
+    res.send('Car Info Not Available')
+  }
+
+  return;
+});
 
 console.log('Server is running');
