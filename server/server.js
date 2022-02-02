@@ -20,8 +20,7 @@ const newConnection = function(socket){
   socket.on('carPosition', carPosition);
   socket.on('controlCar', controlCar);
 
-  //io.sockets.emit('controlCar', {start});
-
+  //The callback function will execute when a user register's a new car;
   function newCarRequest(data){
     cars.push(data);
     let sortedCars = cars.sort((a, b) => {
@@ -30,12 +29,13 @@ const newConnection = function(socket){
     io.sockets.emit('newCarRequest', sortedCars);
   }
 
+   //The callback function will execute when car's starts moving and will share live position;
   function carPosition(data) {
     cars = data;
     socket.broadcast.emit('carPosition', cars);  
   }
 
-  //Control start and stop of 
+  //Control car start and stop motion
   function controlCar(data) {
     start = data.start;
     socket.broadcast.emit('controlCar', {start});   
@@ -44,7 +44,16 @@ const newConnection = function(socket){
 
 io.sockets.on('connect', newConnection);
 
-app.get("/:id", (req, res) => {
+//Route to get the information of all the cars;
+app.get("/cars", (req, res) => {
+  if(cars.length === 0){
+    return res.send('No cars are registered yet');
+  } 
+  return res.json(cars);
+});
+
+//Route to get the information of the specific car using userId/carId;
+app.get("/cars/:id", (req, res) => {
   const userId = req.params.id;
 
   const carInfo =  cars.filter(car => {
@@ -52,12 +61,11 @@ app.get("/:id", (req, res) => {
   })
 
   if(carInfo.length !== 0){
-    res.json(carInfo);
+    return res.json(carInfo);
   } else {
-    res.send('Car Info Not Available')
+    return res.send('Car Info Not Available')
   }
-
-  return;
 });
+
 
 console.log('Server is running');
