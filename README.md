@@ -26,3 +26,4 @@ In the project directory, you can ~cd server folder:
 2. Run npm start
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Information about all cars can be accessed through [http://localhost:3000/cars](http://localhost:3000/cars) & [http://localhost:3000/cars/:id](http://localhost:3000/:id)
