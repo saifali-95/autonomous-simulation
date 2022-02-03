@@ -34,16 +34,23 @@ function setup() {
   submitButton = createButton("submit");
   submitButton.position(250, 760);
   submitButton.mousePressed(() => {
-    newCar = {
-      userId: userId,
-      speed: Number(speed.value()),
-      position: {
-        x: Number(x.value()),
-        g: 250,
-      },
-      color: color.value(),
-    };
-    socket.emit("newCarRequest", newCar);
+    
+    const userCar = cars.filter(car => {
+      return car.userId === userId;
+    })
+
+    if (userCar.length === 0) {
+      newCar = {
+        userId: userId,
+        speed: Number(speed.value()),
+        position: {
+          x: Number(x.value()),
+          g: 250,
+        },
+        color: color.value(),
+      };
+      socket.emit("newCarRequest", newCar);
+    }
   });
 
   //Start and Stop Button

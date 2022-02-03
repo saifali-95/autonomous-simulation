@@ -24,24 +24,21 @@ const newConnection = function(socket){
   //The callback function will execute when a user register's a new car;
   async function newCarRequest(data){
     cars.push(data);
-    sortedCars = await cars.sort((a, b) => {
+    sortedCars = cars.sort((a, b) => {
       return a.position.x - b.position.x;
     });
-    for(let i=0; i<sortedCars.length-1; i++) {
-      
-      if (sortedCars.length === 2) {
-       sortedCars[0]['leftObject'] = 'wall';
-       sortedCars[0]['rightObject'] = sortedCars[1]['userId'];
-       sortedCars[1]['leftObject'] = sortedCars[0]['userId'];
-       sortedCars[1]['rightObject'] = 'wall';
-      }
-      
+  
+    for(let i=0; i<=sortedCars.length-1; i++) {
+ 
       if(i===0 && sortedCars.length === 1){
         sortedCars[i]['leftObject'] = 'wall';
         sortedCars[i]['rightObject'] = 'wall';
       } else if (i===0 && !(sortedCars.length === 1)){
         sortedCars[i]['leftObject'] = 'wall';
         sortedCars[i]['rightObject'] = sortedCars[i+1]['userId'];
+      } else if (i === sortedCars.length -1) {
+        sortedCars[sortedCars.length -1]['leftObject'] = sortedCars[i-1]['userId'];
+        sortedCars[sortedCars.length -1]['rightObject'] = 'wall'; 
       } else {
         sortedCars[i]['leftObject'] = sortedCars[i-1]['userId'];
         sortedCars[i]['rightObject'] = sortedCars[i+1]['userId'];
